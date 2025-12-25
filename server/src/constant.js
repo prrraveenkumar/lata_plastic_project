@@ -1,0 +1,1 @@
+export const DB_Name = 'lata_plastic_db';
