@@ -25,7 +25,7 @@ const ProductSchema = new Schema({
     unit:{
         type: String,
         required: true,
-        enum: ['kg', 'pcs']
+        enum: ['kg', 'piece']
 
     },
     category: {

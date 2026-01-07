@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 const UserSchema = new Schema({
     fullname: {
         type: String,
+        required: true,
         trim: true,
         index: true,
     },
@@ -25,15 +26,16 @@ const UserSchema = new Schema({
         type: String,
         required: [true, "Please provide a password"],
     },
-    avatar: {
-        type: String,
-        unique: true
-    },
     role:{
         type: String,
         enum: ['admin','staff','client'],
         default: 'client'
         
+    },
+    creditBalance: {
+        type: Number,
+        default: 0,
+        min: 0
     },
     refreshToken: {
         type: String
@@ -42,8 +44,8 @@ const UserSchema = new Schema({
     timestamps: true,
 })
 
-UserSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+UserSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
     this.password = await bcrypt.hash(this.password, 10)
 })
 
@@ -79,6 +81,6 @@ UserSchema.methods.generateRefreshToken = function () {
     )
 }
 
-const User = mongoose.model("user", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 export default User;

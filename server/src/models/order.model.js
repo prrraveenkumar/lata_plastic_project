@@ -18,6 +18,16 @@ const BilledSchema = new Schema({
                 required: true,
                 min: 1
             },
+            pricePerUnit: {
+                type: Number,
+                required: true,
+                min: 0
+            },
+            totalPrice: {
+                type: Number,
+                required: true,
+                min: 0
+            }
         }
     ],
     totalAmount: {
@@ -25,17 +35,29 @@ const BilledSchema = new Schema({
         required: true,
         min: 0
     },
+    oldBalance: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    paidAmound:{
+    amountPaid:{
         type: Number,
+        default: 0,
         min: 0
+    },
+    paymentStatus:{
+        type: String,
+        required: true,
+        enum:['Paid', 'Partially Paid', 'Unpaid'],
+        default: 'Unpaid'
     }
 },{timestamps: true});
 
-const Billed = mongoose.model("Billed", BilledSchema);
+const Order = mongoose.model("Order", BilledSchema);
 
-export default Billed;
+export default Order;
