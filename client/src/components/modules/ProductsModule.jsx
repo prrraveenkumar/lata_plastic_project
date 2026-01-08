@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { RefreshCw, Plus } from 'lucide-react';
 import { Input, Select } from '../ui';
 import { useEffect } from 'react';
+import UpdateQuantityform from '../layout/UpdateQuantityform';
 
-const ProductsModule = ({ makeRequest ,  user}) => {
+const ProductsModule = ({ makeRequest, user }) => {
   const [products, setProducts] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ const ProductsModule = ({ makeRequest ,  user}) => {
     unit: 'kg',
     category: 'regular'
   });
+
+  const [showUpdateQuantityform, setShowUpdateQuantityform] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const loadProducts = async () => {
     const result = await makeRequest('/products', 'GET');
@@ -50,12 +54,12 @@ const ProductsModule = ({ makeRequest ,  user}) => {
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </button>
-         {user?.role === 'admin' && (
-           <button onClick={() => setShowAddForm(!showAddForm)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-             <Plus className="w-4 h-4" />
-             <span>Add Product</span>
-           </button>
-         )}
+          {user?.role === 'admin' && (
+            <button onClick={() => setShowAddForm(!showAddForm)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <Plus className="w-4 h-4" />
+              <span>Add Product</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -101,7 +105,7 @@ const ProductsModule = ({ makeRequest ,  user}) => {
               </div>
               {user?.role === 'admin' && (
                 <div className="flex space-x-2">
-                  <button onClick={() => updateStock(product._id, 10, 'add')} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">+10</button>
+                  <button onClick={() => { setShowUpdateQuantityform(true); setSelectedProduct(product); }} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Update Stock</button>
                   <button onClick={() => updateStock(product._id, 50, 'set')} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Set 50</button>
                 </div>
               )}
@@ -109,6 +113,8 @@ const ProductsModule = ({ makeRequest ,  user}) => {
           </div>
         ))}
       </div>
+      {showUpdateQuantityform && <UpdateQuantityform product={selectedProduct} setShowUpdateQuantityform={setShowUpdateQuantityform} updateStock={updateStock} />}
+
     </div>
   );
 };
