@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { CreateOrderForm } from '../ui'
 
@@ -6,7 +6,25 @@ const OCRModule = ({ makeRequest }) => {
   const [file, setFile] = useState(null);
   const [ocrResult, setOcrResult] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [data, setData] = useState({
+     clientId: "",
+    oldBalance: 0,
+    productList: [],
+  });
 
+  useEffect(()=>{
+    if(ocrResult){
+      setData({
+        clientId: ocrResult.matchedClient?._id || "",
+        oldBalance: ocrResult.extracted?.oldBalance || 0,
+        productList: ocrResult.matchedItems?.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          pricePerUnit: item.price
+        })) || [],
+      })
+    }
+  }, [ocrResult])
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -43,7 +61,7 @@ const OCRModule = ({ makeRequest }) => {
           }
         </div>
 
-        {showCreateForm && <CreateOrderForm key={ocrResult.extracted?.clientName || "new-form"} data={ocrResult} setShowCreateForm={setShowCreateForm} />}
+        {showCreateForm && <CreateOrderForm key={ocrResult.extracted?.clientName || "new-form"} data={data} setShowCreateForm={setShowCreateForm} />}
         {ocrResult && (
           <div className="space-y-4">
             <div className="p-4 bg-green-50 rounded-lg">

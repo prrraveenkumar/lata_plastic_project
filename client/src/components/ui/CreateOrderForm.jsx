@@ -4,7 +4,7 @@ import Select from './Select';
 import { Trash2, PlusCircle } from 'lucide-react'; // Added PlusCircle icon
 import { makeRequest } from '../../utils/api.js';
 
-const CreateOrderForm = ({ setShowCreateForm, data, loadOrders }) => {
+const CreateOrderForm = ({ setShowCreateForm, data, setParentFormData }) => {
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -38,12 +38,14 @@ const CreateOrderForm = ({ setShowCreateForm, data, loadOrders }) => {
     if (!data) return;
 
     setFormData({
-      clientId: data.matchedClient?._id ?? "",
-      oldBalance: data.extracted?.oldBalance ?? 0,
-      productList: data.matchedItems?.map(item => ({
+      clientId: data.clientId ?? "",
+      oldBalance: data.oldBalance ??
+      clients.find(c => c._id === data.clientId)?.oldBalance ??
+      0,
+      productList: data.productList?.map(item => ({
         productId: item.productId,
         quantity: item.quantity,
-        pricePerUnit: item.price
+        pricePerUnit: item.pricePerUnit
       })) ?? []
     });
   }, [data]);
@@ -93,6 +95,17 @@ const CreateOrderForm = ({ setShowCreateForm, data, loadOrders }) => {
     }
   };
 
+  const onClose = ()=>{
+    setShowCreateForm(false);
+    if(setParentFormData){
+      setParentFormData({
+        clientId: "",
+        oldBalance: 0,
+        productList: [],
+      });
+    }
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 flex flex-col">
@@ -100,7 +113,7 @@ const CreateOrderForm = ({ setShowCreateForm, data, loadOrders }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4 mb-4">
           <h3 className="text-xl font-bold text-gray-800">Create New Order</h3>
-          <button onClick={() => setShowCreateForm(false)} className="text-gray-400 hover:text-red-500 font-bold text-2xl">×</button>
+          <button onClick={() => onClose()} className="text-gray-400 hover:text-red-500 font-bold text-2xl">×</button>
         </div>
 
         {/* Client & Balance Section */}

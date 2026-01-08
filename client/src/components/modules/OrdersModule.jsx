@@ -81,7 +81,7 @@ const OrdersModule = ({ makeRequest, user }) => {
       </div>
 
       {showCreateForm && (
-        <CreateOrderForm setShowCreateForm={setShowCreateForm}  data={formData} />
+        <CreateOrderForm setShowCreateForm={setShowCreateForm}  data={formData} setParentFormData={setFormData} />
       )}
 
       <div className="space-y-3">
